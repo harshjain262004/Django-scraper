@@ -67,9 +67,9 @@ def result(request):
         df.to_excel(f'scrapy/static/data/{query}+Ad+Advertiser.xlsx', index=False)
         file_path = f"scrapy/static/data/{query}+Ad+Advertiser.xlsx"
         # send_email_with_attachment(subject=f"Scraped Data file for {query}", body="test", to_email=usermail, file_path=file_path)
-        return HttpResponse("Email sent!")
+        return render(request,'dashboard.html')
     else:
-        return HttpResponse("Please input Search Query and number of pages")
+        return render(request,'dashboard.html')
 
 
 # Email Send function
@@ -84,3 +84,8 @@ def send_email_with_attachment(subject, body, to_email, from_email=settings.EMAI
         email.attach_file(file_path)
     email.send()
 
+def homepage(request):
+    if request.method == 'POST':
+        pass
+    else:
+        return render(request,'index.html')

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google ads Scraper</title>
+    <script src="{% static 'hide.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+</head>
+<body>
+    <header class="container-fluid text-center">
+        <div class="row">
+            <div class="col-7">
+            
+            </div>
+            <div class="col-5">
+                <p>
+                    Number of Bots creations available: 10(static)
+                </p>
+            </div>
+        </div>
+    </header>
+    <div class="container text-center p-2">
+        <div class="row">
+            <div class="col-12">
+                <form id="form" method="post" action="/result/" class="display" onsubmit="validateHide()">
+                    <label for="query">Search query</label>
+                    <input type="text" name="query" placeholder="Enter Search query" required>
+                    <br>
+                    <label for="page">Total pages to scrape</label>
+                    <input type="number" max="10" min="1" name="page" required>
+                    <br>
+                    <label for="email">Enter Email address</label>
+                    <input type="email" name="email">
+                    <br>
+                    <input type="submit" value="Create Bot">
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <span id="searching">
+        
+    </span>
+</body>
+</html>

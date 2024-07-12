@@ -20,6 +20,5 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',views.homepage),
-    path('result/', include('scrapy.urls'))
+    path('', include('scrapy.urls'))
 ]
