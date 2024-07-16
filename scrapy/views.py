@@ -1,3 +1,4 @@
+from datetime import date
 from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from selenium import webdriver
@@ -13,7 +14,7 @@ from openpyxl.workbook import Workbook
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import EmailMessage
 from django.conf import settings
-from . models import *
+from . models import Bot,Client,Data
 from django.contrib.auth.hashers import make_password, check_password
 
 def homepage(request):
@@ -66,17 +67,29 @@ def login(request):
     else: 
         return redirect(homepage)
 
-def logout(request):
-    # Set isloggedin false for user
+def logout(request,userid):
+    user = Client.objects.get(userid=userid)
+    user.isLoggedIn = False
+    user.save()
+    request.session['loginmessage'] = "Logged out successfully"
     return redirect(homepage)
 
 @csrf_exempt
 def dashboard(request):
     if request.method == "POST":
-        # form handling of the bot creation request
         n = int(request.POST["page"])
         query = request.POST["query"]
         usermail = request.POST["email"]
+        CurrUser = Client.objects.get(email=usermail)
+        CurrUser.num_bots -= 1
+        CurrUser.save()
+        new_bot = Bot(
+            user=CurrUser,
+            query=query,
+            pages=n,
+            status="Searching&Scraping"
+        )
+        new_bot.save()
         query = query.split()
         query = "+".join(query)
         print(query)
@@ -112,6 +125,15 @@ def dashboard(request):
                 AdvertiserLoc = driver.find_elements(By.CLASS_NAME,"xZhkSd")
                 AdvertiserName = AdvertiserLoc[0].text
                 Location = AdvertiserLoc[1].text
+                newDataRow = Data(
+                    user = CurrUser,
+                    bot = new_bot,
+                    content=adtext,
+                    advertiser_name=AdvertiserName,
+                    location=Location,
+                    date_of_scraping = date.today()
+                )
+                newDataRow.save()
                 List["AdText"].append(adtext)
                 List["Advertiser"].append(AdvertiserName)
                 List["Location"].append(Location)
@@ -119,20 +141,26 @@ def dashboard(request):
                 print(f"Completed AdDiv {j+1}")
                 j += 1
         driver.quit()
+        new_bot.status = "Completed"
+        new_bot.save()
         print("total time:", time.time() - start)
         df = pd.DataFrame(List)
         df.to_excel(f'scrapy/static/data/{query}+Ad+Advertiser.xlsx', index=False)
         file_path = f"scrapy/static/data/{query}+Ad+Advertiser.xlsx"
         # send_email_with_attachment(subject=f"Scraped Data file for {query}", body="test", to_email=usermail, file_path=file_path)
-        return render(request,'dashboard.html')
+        bot = Bot.objects.filter(user=CurrUser)
+        return render(request,'dashboard.html',{'client':CurrUser,
+                                                'bots': bot})
     else:
         #for production add a check if user who tried /dashboard is logged in or not
         email = request.session.pop('useremail', None)
         if email:
             client = Client.objects.get(email=email)
-            return render(request,'dashboard.html',{'client':client})
+            bot = Bot.objects.filter(user=client)
+            return render(request,'dashboard.html',{'client':client,
+                                                     'bots': bot})
         else:
-            return render(request,'dashboard.html')
+            return redirect(homepage)
 
 
 # Email Send function
@@ -147,3 +175,12 @@ def send_email_with_attachment(subject, body, to_email, from_email=settings.EMAI
         email.attach_file(file_path)
     email.send()
 
+def DataShow(request,user_id,bot_id):
+    client = Client.objects.get(userid=user_id)
+    if client.isLoggedIn:
+        bot = Bot.objects.get(botid=bot_id)
+        data = Data.objects.filter(bot=bot)
+        return render(request, 'datatable.html', {'bot': bot,
+                                              'data':data})
+    else:
+        return redirect(homepage)

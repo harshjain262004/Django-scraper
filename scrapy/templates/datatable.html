@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>data for bot</title>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+    <table id="datatable">
+        <thead>
+            <tr>
+                <td>Content</td>
+                <td>Advertiser</td>
+                <td>Location</td>
+            </tr>
+        </thead>
+            {% for row in data %}
+                <tr>
+                    <td>{{row.content}}</td>
+                    <td>{{row.advertiser_name}}</td>
+                    <td>{{row.location}}</td>
+                </tr>
+            {% endfor %}
+        
+    </table>
+    <button onclick="Download()">
+        Download
+    </button>
+    <script>
+        function Download(){
+            var table = document.getElementById('datatable');
+            var workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+            XLSX.writeFile(workbook, 'data.xlsx');
+        }
+    </script>
+</body>
+</html>
