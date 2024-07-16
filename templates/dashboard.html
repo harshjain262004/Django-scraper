@@ -43,7 +43,7 @@
     <div id="listofbots">
         <h1>Bots that user have created</h1>
         {% for bot in bots %}
-            <a href="data/{{bot.botid}}">
+            <a href="data/{{client.userid}}/{{bot.botid}}">
                 <p> {{bot.query}} has Status: {{bot.status}}</p>
                 
             </a>
@@ -55,7 +55,6 @@
         crossorigin="anonymous"></script>
     <script>
         function validate() {
-            // var a = document.getElementById("form");
             if (document.getElementById("num_bots").textContent==0){
                 return false;
             }

@@ -20,8 +20,15 @@ from django.contrib.auth.hashers import make_password, check_password
 def homepage(request):
     signup_message = request.session.pop('signupmessage', None)
     login_message = request.session.pop('loginmessage', None)
+    if signup_message:
+        context = True
+    elif login_message:
+        context = False
+    else:
+        context = True
     return render(request, 'index.html', {'signupmessage': signup_message,
-                                          'loginmessage': login_message})
+                                          'loginmessage': login_message,
+                                          'context': context})
                                           
 def signup(request):
     if request.method == "POST":
@@ -161,7 +168,6 @@ def dashboard(request):
                                                      'bots': bot})
         else:
             return redirect(homepage)
-
 
 # Email Send function
 def send_email_with_attachment(subject, body, to_email, from_email=settings.EMAIL_HOST_USER, file_path=None):

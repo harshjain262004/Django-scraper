@@ -1,0 +1,62 @@
+h1{
+    color: aliceblue;
+}
+
+.display {
+    display: block;
+}
+
+.nodisplay {
+    display: none;
+}
+
+body{
+    background: rgb(5,3,31);
+    background: linear-gradient(90deg, rgba(5,3,31,1) 13%, rgba(31,29,191,1) 53%, rgba(0,0,0,1) 100%);
+    padding-top: 4%;
+}
+
+.maindiv{
+    background-color: aliceblue;
+}
+
+span{
+    display: block;
+    color: rgb(255, 54, 54)
+}
+
+::placeholder{
+    opacity: 1;
+    color: black;
+    text-align: center;
+    overflow: auto;
+}
+
+input{
+    width: 100%;
+    border: solid black 2px;
+    background: transparent;
+    padding: 10px;
+}
+
+input[type="submit"]{
+    width:50%;
+    border: solid black 2px;
+    background:#4CAF50;
+    padding: 10px;
+}
+
+input[type=submit]:hover {
+    background-color:hwb(132 1% 37%);
+}
+
+.transitbutton{
+    border: solid black 2px;
+    padding: 10px;
+    background-color: bisque;
+    width: 100%;
+}
+
+.transitbutton:hover{
+    background-color: burlywood;
+}
