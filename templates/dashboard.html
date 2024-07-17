@@ -1,72 +1,111 @@
 <!DOCTYPE html>
-{% load static %}
 <html lang="en">
-
+    {% load static %}
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link rel="stylesheet" href="{% static 'dashboard.css' %}">
 </head>
 
 <body>
-    <ul>
-        <li>{{client.email}}</li>
-        <li id="num_bots">{{client.num_bots}}</li>
-        <li>
-            <h1>
-                <a href="/logout/{{client.userid}}">Logout</a>
-            </h1>
-        </li>
-    </ul>
+    <div class="container-fluid">
+        <div class="navbar p-2 justify-content-center row">
+            <div class="col-4 text-center">
+                <button class="btn rounded modalbutton text-center shadow" data-bs-toggle="modal" data-bs-target="#BotCreationForm">
+                    <strong>Create a Bot</strong>
+                </button>
+            </div>
+            <div class="col-4 text-center">
+                <strong style="color: black;">
+                    Credits: <span id="num_bots" style="color: black;"> {{client.num_bots}} </span>
+                </strong>
+            </div>
+            <div class="col-4 text-center"><a href="/logout/{{client.userid}}">Logout</a></div>
+        </div>
+    </div>
 
+    <div class="modal fade" id="BotCreationForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Create a Bot</h5>
+                    <button id="ModalCloseButton" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form" method="post" action="#" class="display container-fluid"
+                        onsubmit="return validateModalForm()">
+                        <div class="row justify-content-center p-2">
+                            <div class="col text-center">
+                                <input type="text" id="query" name="query" placeholder="Enter Search query" required
+                                    class="rounded" />
+                            </div>
+                        </div>
+                        <div class="row p-2">
+                            <div class="col text-center">
+                                <input type="number" id="pages" max="10" min="1" name="page" required
+                                    placeholder="Total Pages to Scrape (max:10)" class="rounded" />
+                            </div>
+                        </div>
+                        <div class="row p-2">
+                            <div class="col text-center">
+                                <input type="submit" value="Create Bot" class="rounded" />
+                            </div>
+                        </div>
+                        <div class="row p-2">
+                            <div class="col text-center">
+                                <span id="ErrorMessageBotCreation"> </span>
+                            </div>
+                        </div>
+                        <input type="text" class="nodisplay" name="userid" value="{{ client.userid }}" />
+                        <input type="email" class="nodisplay" name="email" value="{{ client.email }}" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <form id="form" method="post" action="#" class="display" onsubmit="return validate()">
-        <label for="query">Search query</label>
-        <input type="text" id="query" name="query" placeholder="Enter Search query" required>
-        <br>
-        <label for="page">Total pages to scrape</label>
-        <input type="number" max="10" min="1" name="page" required>
-        <br>
-        <input type="text" class="nodisplay" name="userid" value="{{ client.userid }}">
-        <input type="email" class="nodisplay" name="email" value="{{ client.email }}">
-        <span id="ErrorCreateBot">
-            <!-- error message about the bot just in case -->
-        </span>
-        <input type="submit" value="Create Bot">
-    </form>
+    
 
-    <span id="searching">
-
-    </span>
-    <div id="listofbots">
-        <h1>Bots that user have created</h1>
-        {% for bot in bots %}
-            <a href="data/{{client.userid}}/{{bot.botid}}">
-                <p> {{bot.query}} has Status: {{bot.status}}</p>
-                
-            </a>
-        {% endfor %}
+    <div id="listofbots" class="container-fluid rounded">
+        <div class="row p-2" id="listofbotsMainRow">
+            {% for bot in bots %}
+            
+                <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-xs-12 justify-content-center">
+                    <div class="container-fluid mt-2 mb-3 border p-2 shadow rounded">
+                        <div class="row">
+                            <div class="col-8">
+                                Search Query: {{bot.query}}
+                            </div>
+                            <div class="col-4">
+                                Pages: {{bot.pages}}
+                                <br>
+                                {% if bot.status == "Completed" %}
+                                    <span id="StatusGreen">{{bot.status}}</span>
+                                {% else %}
+                                    <span id="StatusRed">{{bot.status}}</span>
+                                {% endif %}
+                                <br>
+                                {% if bot.status == "Completed" %}
+                                    <a href="data/{{client.userid}}/{{bot.botid}}">
+                                        View Data
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-    <script>
-        function validate() {
-            if (document.getElementById("num_bots").textContent==0){
-                return false;
-            }
-            var listofbotsDiv = document.getElementById('listofbots');
-            var newp = document.createElement('p');
-            var lastName = document.createElement('p');
-            lastName.textContent = 'New Bot active: Searching and Scraping';
-            newp.appendChild(lastName);
-            listofbotsDiv.appendChild(newp);
-            return true;
-        }
-    </script>
+    <script src="{% static 'dashboard.js'%}"></script>
 </body>
 
 </html>

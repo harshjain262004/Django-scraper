@@ -88,66 +88,76 @@ def dashboard(request):
         query = request.POST["query"]
         usermail = request.POST["email"]
         CurrUser = Client.objects.get(email=usermail)
+        request.session['useremail'] = usermail
+        if CurrUser.num_bots == 0:
+            return redirect(dashboard)
         CurrUser.num_bots -= 1
         CurrUser.save()
         new_bot = Bot(
             user=CurrUser,
             query=query,
             pages=n,
-            status="Searching&Scraping"
+            status="Scraping"
         )
         new_bot.save()
-        query = query.split()
-        query = "+".join(query)
-        print(query)
-        start = time.time()
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--window-size=1920x1080")
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=chrome_options)
-        List = {
-            "AdText":[],
-            "Advertiser":[],
-            "Location":[]
-        }
-        for i in range(n):
-            print(f"Page No: {i+1}")
-            if i!=0:
-                url = f"https://www.google.com/search?q={query}&start={i}0"
-            else:
-                url = f"https://www.google.com/search?q={query}&start=0"
-            driver.get(url) 
-            time.sleep(3)
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            adBox = driver.find_elements(By.CLASS_NAME,"uEierd")
-            print(len(adBox))
-            j = 0
-            for ad in adBox:
-                adtext = ad.text
-                clickable = ad.find_element(By.XPATH,'.//div[@title="Why this ad?" and @aria-label="Why this ad?" and @role="button"]')
-                driver.execute_script("arguments[0].click();", clickable)
-                time.sleep(2)
-                AdvertiserLoc = driver.find_elements(By.CLASS_NAME,"xZhkSd")
-                AdvertiserName = AdvertiserLoc[0].text
-                Location = AdvertiserLoc[1].text
-                newDataRow = Data(
-                    user = CurrUser,
-                    bot = new_bot,
-                    content=adtext,
-                    advertiser_name=AdvertiserName,
-                    location=Location,
-                    date_of_scraping = date.today()
-                )
-                newDataRow.save()
-                List["AdText"].append(adtext)
-                List["Advertiser"].append(AdvertiserName)
-                List["Location"].append(Location)
-                webdriver.ActionChains(driver).send_keys(Keys.ESCAPE).perform()
-                print(f"Completed AdDiv {j+1}")
-                j += 1
-        driver.quit()
+        try:
+            query = query.split()
+            query = "+".join(query)
+            print(query)
+            start = time.time()
+            chrome_options = webdriver.ChromeOptions()
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--disable-gpu")
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--window-size=1920x1080")
+            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=chrome_options)
+            List = {
+                "AdText":[],
+                "Advertiser":[],
+                "Location":[]
+            }
+            for i in range(n):
+                print(f"Page No: {i+1}")
+                if i!=0:
+                    url = f"https://www.google.com/search?q={query}&start={i}0"
+                else:
+                    url = f"https://www.google.com/search?q={query}&start=0"
+                driver.get(url) 
+                time.sleep(3)
+                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                adBox = driver.find_elements(By.CLASS_NAME,"uEierd")
+                print(len(adBox))
+                j = 0
+                for ad in adBox:
+                    adtext = ad.text
+                    clickable = ad.find_element(By.XPATH,'.//div[@title="Why this ad?" and @aria-label="Why this ad?" and @role="button"]')
+                    driver.execute_script("arguments[0].click();", clickable)
+                    time.sleep(2)
+                    AdvertiserLoc = driver.find_elements(By.CLASS_NAME,"xZhkSd")
+                    AdvertiserName = AdvertiserLoc[0].text
+                    Location = AdvertiserLoc[1].text
+                    newDataRow = Data(
+                        user = CurrUser,
+                        bot = new_bot,
+                        content=adtext,
+                        advertiser_name=AdvertiserName,
+                        location=Location,
+                        date_of_scraping = date.today()
+                    )
+                    newDataRow.save()
+                    List["AdText"].append(adtext)
+                    List["Advertiser"].append(AdvertiserName)
+                    List["Location"].append(Location)
+                    webdriver.ActionChains(driver).send_keys(Keys.ESCAPE).perform()
+                    print(f"Completed AdDiv {j+1}")
+                    j += 1
+            driver.quit()
+        except:
+            new_bot.status = "Error"
+            new_bot.save()
+            bot = Bot.objects.filter(user=CurrUser)
+            return render(request,'dashboard.html',{'client':CurrUser,
+                                                'bots': bot})
         new_bot.status = "Completed"
         new_bot.save()
         print("total time:", time.time() - start)
@@ -159,7 +169,6 @@ def dashboard(request):
         return render(request,'dashboard.html',{'client':CurrUser,
                                                 'bots': bot})
     else:
-        #for production add a check if user who tried /dashboard is logged in or not
         email = request.session.pop('useremail', None)
         if email:
             client = Client.objects.get(email=email)
