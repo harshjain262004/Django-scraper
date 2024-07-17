@@ -1,5 +1,6 @@
 body{
     background-color: aliceblue;
+    padding: 0;
 }
 
 .nodisplay {
@@ -59,4 +60,17 @@ input[type="submit"]:hover {
 }
 #listofbots{
     background-color: aliceblue;
+}
+.equal{
+    display: flex;
+}
+.outer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+.inner{
+
 }

@@ -91,8 +91,6 @@ def dashboard(request):
         request.session['useremail'] = usermail
         if CurrUser.num_bots == 0:
             return redirect(dashboard)
-        CurrUser.num_bots -= 1
-        CurrUser.save()
         new_bot = Bot(
             user=CurrUser,
             query=query,
@@ -160,6 +158,8 @@ def dashboard(request):
                                                 'bots': bot})
         new_bot.status = "Completed"
         new_bot.save()
+        CurrUser.num_bots -= 1
+        CurrUser.save()
         print("total time:", time.time() - start)
         df = pd.DataFrame(List)
         df.to_excel(f'scrapy/static/data/{query}+Ad+Advertiser.xlsx', index=False)
@@ -196,6 +196,7 @@ def DataShow(request,user_id,bot_id):
         bot = Bot.objects.get(botid=bot_id)
         data = Data.objects.filter(bot=bot)
         return render(request, 'datatable.html', {'bot': bot,
-                                              'data':data})
+                                              'data':data,
+                                              'client':client})
     else:
         return redirect(homepage)

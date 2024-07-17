@@ -17,22 +17,21 @@ function validateModalForm() {
     ModalCloseButton.click();
     const listofbotsMainRow = document.getElementById('listofbotsMainRow')
     const newDiv = document.createElement('div');
-    newDiv.className = "col-xl-3 col-lg-6 col-md-6 col-sm-12 col-xs-12 justify-content-center";
+    newDiv.className = "col-xl-3 col-lg-6 col-md-6 col-sm-12 col-xs-12 justify-content-center equal mt-2";
     newDiv.innerHTML = 
-            `<div class="container-fluid mt-2 mb-3 p-2 border shadow rounded">
-                <div class="row">
-                    <div class="col-8">
-                         Search Query: ${bot.query}
-                    </div>
-                    <div class="col-4">
-                        Pages: ${bot.pages}
-                        <br>
-                        <span id="StatusRed">${bot.status}</span>
-                        <br>
-                        <br>
-                    </div>
-                </div>
-            </div>`;
+            `<div class="container-fluid border p-2 shadow rounded outer">
+                        <div class="row inner">
+                            <div class="col-7">
+                                Search Query: ${bot.query}
+                            </div>
+                            <div class="col-5">
+                                Pages: ${bot.pages}
+                                <br>
+                                    <span id="StatusRed">${bot.status}</span>
+                                <br>
+                            </div>
+                        </div>
+                    </div>`;
     listofbotsMainRow.appendChild(newDiv);
     return true;
 }
