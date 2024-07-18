@@ -178,6 +178,11 @@ def dashboard(request):
         else:
             return redirect(homepage)
 
+def dashboardForUser(request, user_id):
+    client = Client.objects.get(userid = user_id)
+    request.session['useremail'] = client.email
+    return redirect(dashboard)
+
 # Email Send function
 def send_email_with_attachment(subject, body, to_email, from_email=settings.EMAIL_HOST_USER, file_path=None):
     email = EmailMessage(

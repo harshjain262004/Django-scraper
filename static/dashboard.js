@@ -29,6 +29,9 @@ function validateModalForm() {
                                 <br>
                                     <span id="StatusRed">${bot.status}</span>
                                 <br>
+                                <div class="spinner-border mt-1 mb-1 spinner-border-sm" role="status">
+                                    <span class="sr-only"></span>
+                                </div>
                             </div>
                         </div>
                     </div>`;

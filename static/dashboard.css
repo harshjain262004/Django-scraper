@@ -6,6 +6,9 @@ body{
 .nodisplay {
     display: none;
 }
+.display{
+    display: block;
+}
 
 .navbar {
     background-color: aliceblue;
@@ -73,4 +76,8 @@ input[type="submit"]:hover {
 }
 .inner{
 
+}
+
+#AccordionContainer{
+    background-color: aliceblue;
 }
