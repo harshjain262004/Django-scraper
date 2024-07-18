@@ -17,7 +17,7 @@ function validateModalForm() {
     ModalCloseButton.click();
     const listofbotsMainRow = document.getElementById('listofbotsMainRow')
     const newDiv = document.createElement('div');
-    newDiv.className = "col-xl-3 col-lg-6 col-md-6 col-sm-12 col-xs-12 justify-content-center equal mt-2";
+    newDiv.className = "col-xl-3 col-lg-6 col-md-6 col-sm-12 col-xs-12 justify-content-center equal mt-3";
     newDiv.innerHTML = 
             `<div class="container-fluid border p-2 shadow rounded outer">
                         <div class="row inner">
