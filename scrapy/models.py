@@ -14,7 +14,7 @@ class Bot(models.Model):
     user = models.ForeignKey(Client, related_name='bots', on_delete=models.CASCADE)
     query = models.CharField(max_length=255)
     pages = models.PositiveIntegerField(default=1)
-    status = models.CharField(max_length=50)
+    status = models.CharField(max_length=50) #StartBot 0% 10% ... Completed Error
 
 class Data(models.Model):
     dataid = models.AutoField(primary_key=True)

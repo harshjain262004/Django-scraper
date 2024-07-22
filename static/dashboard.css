@@ -44,6 +44,29 @@ input[type="submit"]:hover {
     background-color: hwb(132 1% 37%);
 }
 
+.ModalSubmit{
+    width: 50%;
+    border: solid black 2px;
+    background: #4caf50;
+    padding: 10px;
+}
+
+.ModalSubmit:hover {
+    background-color: hwb(132 1% 37%);
+}
+
+button{
+    width: 50%;
+    border: solid black 2px;
+    background: #4caf50;
+    padding: 10px;
+}
+
+button:hover {
+    background-color: hwb(132 1% 37%);
+}
+
+
 .modalbutton {
     border: solid black 2px;
     background-color: bisque;
@@ -80,4 +103,15 @@ input[type="submit"]:hover {
 
 #AccordionContainer{
     background-color: aliceblue;
+}
+
+.StartBotButton{
+    width: 100%;
+    border: solid black 2px;
+    background: #4caf50;
+    padding: 1%;
+}
+
+.StartBotButton:hover{
+    background-color: hwb(132 1% 37%);
 }
