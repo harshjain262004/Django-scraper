@@ -11,6 +11,7 @@ urlpatterns = [
     path('dashboard/CreateBot',views.CreateBot,name="CreateBot"),
     path('dashboard/StartBot',views.StartBot),
     path('dashboard/getRefreshList',views.getRefreshList),
+    path('dashboard/getFilteredBots',views.getFilteredBots),
     path('dashboard/<int:user_id>',views.dashboardForUser,name="dashboardForUser"),
     path('dashboard/data/<int:user_id>/<int:bot_id>',views.DataShow, name="DataShow"),
 ]

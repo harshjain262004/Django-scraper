@@ -16,7 +16,6 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 from . models import Bot,Client,Data
 from django.contrib.auth.hashers import make_password, check_password
-from django.db.models import Q
 
 def homepage(request):
     signup_message = request.session.pop('signupmessage', None)
@@ -50,7 +49,7 @@ def signup(request):
         except:
             request.session['signupmessage'] = "This email already exists"
             return redirect(homepage)
-        request.session['signupmessage'] = "Account created successfully" 
+        request.session['loginmessage'] = "Account created successfully" 
         return redirect(homepage)
     else:
         return redirect(homepage)
@@ -76,6 +75,7 @@ def login(request):
         return redirect(homepage)
 
 def logout(request,userid):
+    email = request.session.pop('useremail', None)
     user = Client.objects.get(userid=userid)
     user.isLoggedIn = False
     user.save()
@@ -88,6 +88,7 @@ def dashboard(request):
     if email:
         client = Client.objects.get(email=email)
         bot = Bot.objects.filter(user=client)
+        request.session['useremail'] = email
         return render(request,'dashboard.html',{'client':client,
                                                  'bots': bot})
     else:
@@ -95,8 +96,11 @@ def dashboard(request):
 
 def dashboardForUser(request, user_id):
     client = Client.objects.get(userid = user_id)
-    request.session['useremail'] = client.email
-    return redirect(dashboard)
+    if client.isLoggedIn:
+        request.session['useremail'] = client.email
+        return redirect(dashboard)
+    else:
+        return redirect(homepage)
 
 # Email Send function
 def send_email_with_attachment(subject, body, to_email, from_email=settings.EMAIL_HOST_USER, file_path=None):
@@ -169,6 +173,7 @@ def StartBot(request):
                 'botid': botid,
                 'pages': bot.pages,
                 'BotStatus':bot.status,
+                'error':ScrapeStatus
             }
         }
         return JsonResponse(response_data,status=200)
@@ -212,10 +217,14 @@ def StartScrape(botid):
                 adtext = ad.text
                 clickable = ad.find_element(By.XPATH,'.//div[@title="Why this ad?" and @aria-label="Why this ad?" and @role="button"]')
                 driver.execute_script("arguments[0].click();", clickable)
-                time.sleep(2)
+                time.sleep(3)
                 AdvertiserLoc = driver.find_elements(By.CLASS_NAME,"xZhkSd")
-                AdvertiserName = AdvertiserLoc[0].text
-                Location = AdvertiserLoc[1].text
+                if len(AdvertiserLoc) >= 2:
+                    AdvertiserName = AdvertiserLoc[0].text
+                    Location = AdvertiserLoc[1].text
+                else:
+                    AdvertiserName = "Not Available"
+                    Location = "Not Available"
                 newDataRow = Data(
                     user = user,
                     bot = bot,
@@ -242,7 +251,7 @@ def StartScrape(botid):
         bot.save()
         user.num_bots += 1
         user.save()
-        return "Error"
+        return str(e)
     bot.status = "Completed"
     bot.save()
     print("Total time:", time.time() - start)
@@ -257,7 +266,7 @@ def StartScrape(botid):
 def getRefreshList(request):
     if request.method == "POST":
         client = Client.objects.get(userid=request.POST.get("ClientId"))
-        bots = Bot.objects.filter(user=client).exclude(Q(status='StartBot'))
+        bots = Bot.objects.filter(user=client)
         response_data = {
             'status': 'success',
             'message': 'Data received successfully',
@@ -272,4 +281,37 @@ def getRefreshList(request):
         return JsonResponse(response_data,status=200)
     return redirect(homepage)
 
-        
+
+#EndPoint API: dashboard/getFilteredBots
+@csrf_exempt
+def getFilteredBots(request):
+    if request.method == "POST":
+        keyword = request.POST.get("keyword").lower().strip()
+        client = Client.objects.get(userid=request.POST.get("ClientId"))
+        bots = Bot.objects.filter(user=client)
+        ValidBots = []
+        for bot in bots:
+            if bot.query.lower().startswith(keyword):
+                ValidBots.append(bot)
+            elif keyword in bot.query.split():
+                ValidBots.append(bot)
+            else:
+                for word in bot.query.split():
+                    if word.lower().startswith(keyword):
+                        ValidBots.append(bot)
+                        continue
+        response_data = {
+            'status': 'success',
+            'message': 'Data received successfully',
+            'received_data': []
+        }
+        for bot in ValidBots:
+            response_data['received_data'].append({
+            'botid': bot.botid,
+            'query': bot.query,
+            'status': bot.status,
+            'pages':bot.pages
+            })
+        return JsonResponse(response_data,status=200)
+    else:
+        return redirect(homepage)

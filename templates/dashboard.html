@@ -3,192 +3,252 @@
 {% load static %}
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
-    <link rel="stylesheet" href="{% static 'dashboard.css' %}">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard</title>
+  <!-- css -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="{% static 'style.css' %}" />
+  <!-- js -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script src="{% static 'dashboard.js' %}"></script>
 </head>
 
-<body>
-    {% csrf_token %}
-    <!-- NavBar for big screens -->
-    <div class="container-fluid" id="navbarContainer">
-        <div class="navbar p-2 justify-content-center row">
-            <div class="col-3 text-center">
-                <button class="btn rounded modalbutton text-center shadow" data-bs-toggle="modal"
-                    data-bs-target="#BotCreationForm">
-                    <strong>Create a Bot</strong>
-                </button>
-            </div>
-            <div class="col-3 text-center">
-                <strong style="color: black;">
-                    Credits: <span id="num_bots" style="color: black;"> {{client.num_bots}} </span>
-                </strong>
-            </div>
-            <div class="col-3 text-center">
-                <strong style="color: black;">
-                    Buy Credits
-                </strong>
-            </div>
-            <div class="col-3 text-center"><a href="/logout/{{client.userid}}">Logout</a></div>
-        </div>
+<body class="db-body">
+  {% csrf_token %}
+  <header class="px-3">
+    <div class="d-flex justify-content-between align-items-center h-100">
+      <div>Ad Scraper</div>
+      <a href="/logout/{{client.userid}}">
+        <button class="logout-btn">
+          <i class="fa-solid fa-right-from-bracket me-2"></i>Logout
+        </button>
+      </a>
     </div>
-    <!-- Accordion Navbar for smaller screens like phone -->
-    <div class="accordion accordion-flush" id="AccordionContainer">
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="flush-headingOne">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                    <strong>Nav/Create Bots</strong>
-                </button>
-            </h2>
-            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne"
-                data-bs-parent="#accordionFlushExample">
-                <div class="accordion-body">
-                    <div class="container-fluid p-2">
-                        <div class="row">
-                            <div class="col-12 mt-2 text-center">
-                                <button class="btn rounded modalbutton text-center shadow" data-bs-toggle="modal"
-                                    data-bs-target="#BotCreationForm">
-                                    <strong>Create a Bot</strong>
-                                </button>
-                            </div>
-                            <div class="col-12 mt-2 text-center">
-                                <strong style="color: black;">
-                                    Credits: <span id="num_bots" style="color: black;"> {{client.num_bots}} </span>
-                                </strong>
-                            </div>
-                            <div class="col-12 mt-2 text-center">
-                                <strong style="color: black;">
-                                    Buy Credits
-                                </strong>
-                            </div>
-                            <div class="col-12 mt-2 text-center"><a href="/logout/{{client.userid}}">Logout</a></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  </header>
+  <div class="row option-div my-3 mx-5 align-items-center">
+    <div class="col-2 d-flex justify-content-center">
+      <button data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <i class="fa-solid fa-robot me-3"></i>Create a bot
+      </button>
+    </div>
+    <div class="col d-flex justify-content-center align-items-center">
+      <i class="fa-solid fa-money-bill me-2"></i>Credits:
+      <span class="counter-span ms-2" id="num_bots">{{client.num_bots}}</span>
+    </div>
+    <div class="col-2 d-flex justify-content-center">
+      <button>
+        <i class="fa-solid fa-cart-shopping me-3"></i>Buy Credits
+      </button>
+    </div>
+  </div>
+  <div class="option-div mx-5 my-4 px-4">
+
+    <div class="d-flex justify-content-between align-items-center m-3" style="text-wrap: no-wrap">
+      <h3 class="m-0">All Queries:</h3>
+      <div class="d-flex align-items-center">
+        <button id="statsBtn" class="stats-btn me-4 fw-bold"><i class="fa-solid fa-chart-pie me-1"></i>Stats</button>
+        <input type="search" class="search-bar" placeholder="Search your query" id="SearchBarFilter" /><i
+          class="fa-solid fa-magnifying-glass ms-2 mt-1"></i>
+      </div>
     </div>
 
-    <!-- Modal to open when create a bot is clicked -->
-    <div class="modal fade" id="BotCreationForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Create a Bot</h5>
-                    <button id="ModalCloseButton" type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="form" class="display container-fluid">
-                        <div class="row justify-content-center p-2">
-                            <div class="col text-center">
-                                <input type="text" id="query" name="query" placeholder="Enter Search query" required
-                                    class="rounded" />
-                            </div>
-                        </div>
-                        <div class="row p-2">
-                            <div class="col text-center">
-                                <input type="number" id="pages" max="10" min="1" name="page" required
-                                    placeholder="Total Pages to Scrape (max:10)" class="rounded" />
-                            </div>
-                        </div>
-                        <div class="row p-2">
-                            <div class="col text-center">
-                                <button class="rounded ModalSubmit" onclick="validateModalForm()">
-                                    Create Bot
-                                </button>
-                            </div>
-                        </div>
-                        <div class="row p-2">
-                            <div class="col text-center">
-                                <span id="ErrorMessageBotCreation"> </span>
-                            </div>
-                        </div>
-                        <input type="text" class="nodisplay" id="clientUserId" name="userid"
-                            value="{{ client.userid }}" />
-                        <input type="email" class="nodisplay" id="clientEmailId" name="email"
-                            value="{{ client.email }}" />
-                    </div>
-                </div>
+    <hr />
+    <div class="row my-4" id="listofbotsMainRow">
+      {% for bot in bots %}
+      {% if bot.status == "Error" %}
+      <!-- bot stat error -->
+      <div class="col-3 mb-4">
+        <div class="card small-cards">
+          <div class="row title-section" style="text-wrap: nowrap">
+            <div class="col-4">Search query:</div>
+            <div class="col-8">
+              <span class="query-name">{{bot.query}}</span>
             </div>
-        </div>
-    </div>
-
-
-    <!-- List of bots working and completed -->
-    <div id="listofbots" class="container-fluid rounded">
-        <div class="row p-2" id="listofbotsMainRow">
-            {% for bot in bots %}
-            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-xs-12 justify-content-center equal mt-3">
-                <div class="container-fluid border p-2 shadow rounded outer">
-                    <div class="row inner">
-                        <div class="col-7">
-                            Search Query: {{bot.query}}
-                        </div>
-                        <div class="col-5"  id="BotDetails-{{bot.botid}}">
-                            Pages: {{bot.pages}}
-                            <br>
-                            {% if bot.status == "Completed" %}
-                            <span id="StatusGreen">{{bot.status}}</span>
-                            {% elif bot.status == "Error" %}
-                            <span id="StatusRed">{{bot.status}}</span>
-                            {% elif bot.status == "StartBot" %}
-                            <button class="rounded StartBotButton" id="StartBot-{{bot.botid}}" onclick="StartBotRun({{ client.userid }},{{ bot.botid }})">
-                                Start Bot
-                            </button>
-                            {% else %}
-                            <!-- Basically bot is running -->
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated" id="ProgressBar-{{bot.botid}}" role="progressbar" aria-label="Animated striped example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: {{bot.status}};">{{bot.status}}</div>
-                            </div>
-                            {% endif %}
-                            <br>
-                            {% if bot.status == "Completed" %}
-                            <a href="data/{{client.userid}}/{{bot.botid}}">
-                                View Data
-                            </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="d-flex align-items-center my-3">
+                Pages:<span class="page-no mx-2">{{bot.pages}}</span>
+              </div>
             </div>
-            {% endfor %}
+            <div class="col-8 d-flex align-items-center" id="BotStat-{{bot.botid}}">
+              <div id="statusDiv" class="status-div error-div">
+                <i class="fa-solid fa-circle-exclamation me-1"></i> Error
+              </div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center my-2" id="StartBotOrViewData-{{bot.botid}}">
+            <a href="data/{{client.userid}}/{{bot.botid}}">
+              <button class="view-btn">View Data</button>
+            </a>
+          </div>
         </div>
+      </div>
+      {% elif bot.status == "Completed" %}
+      <!-- bot stat completed -->
+      <div class="col-3 mb-4">
+        <div class="card small-cards">
+          <div class="row title-section" style="text-wrap: nowrap">
+            <div class="col-4">Search query:</div>
+            <div class="col-8">
+              <span class="query-name">{{bot.query}}</span>
+            </div>
+          </div>
+          <div class="row justify-content-between">
+            <div class="col-4">
+              <div class="d-flex align-items-center my-3">
+                Pages:<span class="page-no mx-2">{{bot.pages}}</span>
+              </div>
+            </div>
+            <div class="col-8 d-flex align-items-center" id="BotStat-{{bot.botid}}">
+              <div id="statusDiv" class="status-div comp-div">
+                <i class="fa-solid fa-check me-2"></i>Completed
+              </div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center my-2" id="StartBotOrViewData-{{bot.botid}}">
+            <a href="data/{{client.userid}}/{{bot.botid}}">
+              <button class="view-btn">View Data</button>
+            </a>
+          </div>
+        </div>
+      </div>
+      {% elif bot.status == "StartBot" %}
+      <!-- bot stat start Bot -->
+      <div class="col-3 mb-4">
+        <div class="card small-cards">
+          <div class="row title-section" style="text-wrap: nowrap">
+            <div class="col-4">Search query:</div>
+            <div class="col-8">
+              <span class="query-name">{{bot.query}}</span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="d-flex align-items-center my-3">
+                Pages:<span class="page-no mx-2">{{bot.pages}}</span>
+              </div>
+            </div>
+            <div class="col-8 d-flex align-items-center" id="BotStat-{{bot.botid}}">
+              <div id="statusDiv" class="status-div create-div">
+                <i class="fa-regular fa-circle-check me-1"></i> Created
+              </div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center my-2" id="StartBotOrViewData-{{bot.botid}}">
+            <button class="view-btn" id="StartBot-{{bot.botid}}"
+              onclick="StartBotRun({{client.userid}},{{bot.botid}})">Start Bot</button>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <!-- bot stat in progress -->
+      <div class="col-3 mb-4">
+        <div class="card small-cards">
+          <div class="row title-section" style="text-wrap: nowrap">
+            <div class="col-4">Search query:</div>
+            <div class="col-8">
+              <span class="query-name">{{bot.query}}</span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="d-flex align-items-center my-3">
+                Pages:<span class="page-no mx-2">{{bot.pages}}</span>
+              </div>
+            </div>
+            <div class="col-8 d-flex align-items-center" id="BotStat-{{bot.botid}}">
+              <div id="statusDiv" class="status-div prog-div">
+                <div class="progress" role="progressbar" aria-label="Success striped example" aria-valuenow="25"
+                  aria-valuemin="0" aria-valuemax="100">
+                  <div id="ProgressBar-{{bot.botid}}"
+                    class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                    style="width: {{bot.status}};">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center my-2" id="StartBotOrViewData-{{bot.botid}}">
+            <a href="data/{{client.userid}}/{{bot.botid}}">
+              <button class="view-btn">View Data</button>
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
     </div>
+  </div>
+  <div id="graphDiv" class="graph-div">
+    <div class="d-flex justify-content-center align-items-center fw-bold mt-2 border-bottom">Status of query:</div>
+    <canvas id="myChart" class="d-flex justify-content-center" style="width:100%;max-width:512px"></canvas>
+    <div class="d-flex justify-content-center align-items-center mt-3 query-name"><button
+        id="clsGraphBtn">Close</button></div>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-    <script src="{% static 'dashboard.js'%}"></script>
-    <script>
-        // Convert navbar to accordion in smaller screens
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const navbar = document.getElementById("navbarContainer");
-            const accordion = document.getElementById("AccordionContainer");
-            const mediaQuery = window.matchMedia('(max-width: 350px)');
-            function handleScreenChange(e) {
-                if (e.matches) {
-                    navbar.classList.remove("display");
-                    navbar.classList.add("nodisplay");
-                    accordion.classList.remove("nodisplay");
-                    accordion.classList.add("display");
-                } else {
-                    navbar.classList.add("display");
-                    navbar.classList.remove("nodisplay");
-                    accordion.classList.add("nodisplay");
-                    accordion.classList.remove("display");
-                }
-            }
-            handleScreenChange(mediaQuery);
-            mediaQuery.addListener(handleScreenChange);
+  <script>
+    $("document").ready(function () {
+      $("#statsBtn").click(openGraph);
+      $("#clsGraphBtn").click(closeGraph);
+      function openGraph() {
+        $("#graphDiv").css({
+          display: "block",
+          transition: "all 0.5s ease",
         });
-    </script>
+      }
+      function closeGraph() {
+        $("#graphDiv").css({
+          display: "none",
+          transition: "all 0.5s ease",
+        });
+      }
+    });
+
+    $(document).mouseup(function (e) {
+      if ($(e.target).
+        closest("#graphDiv").length === 0) {
+        $("#graphDiv").hide();
+      }
+    });
+  </script>
 </body>
+
+<!-- Modal Form -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel"> <i class="fa-solid fa-robot me-3"></i>Create a bot</h1>
+        <button id="ModalCloseButton" type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="form">
+          <div class="form-label">Enter search query</div>
+          <input type="text" id="query" />
+          <div class="form-label">Total pages to scrap</div>
+          <input type="number" placeholder="Max:10" min="1" max="10" id="pages" />
+          <input type="button" class="submit-btn" value="Create bot" onclick="validateModalForm()">
+          <input type="text" class="nodisplay" id="clientUserId" name="userid" value="{{ client.userid }}" />
+          <input type="email" class="nodisplay" id="clientEmailId" name="email" value="{{ client.email }}" />
+          <div class="modal-footer d-flex justify-content-center">
+            <span id="ErrorMessageBotCreation"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 </html>

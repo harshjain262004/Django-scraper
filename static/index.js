@@ -19,22 +19,6 @@ function Client_Side_Signup_Validate() {
     }
     return true;
 }
-const SignupButton = document.getElementById('SignupButton');
-const LoginButton = document.getElementById('LoginButton');
-const LoginFormContainer = document.getElementById('LoginFormContainer');
-const SignupFormContainer = document.getElementById('SignupFormContainer');
-SignupButton.addEventListener("click", function () {
-    LoginFormContainer.classList.remove("display");
-    LoginFormContainer.classList.add("nodisplay");
-    SignupFormContainer.classList.remove("nodisplay");
-    SignupFormContainer.classList.add("display");
-});
-LoginButton.addEventListener("click", function () {
-    SignupFormContainer.classList.remove("display");
-    SignupFormContainer.classList.add("nodisplay");
-    LoginFormContainer.classList.remove("nodisplay");
-    LoginFormContainer.classList.add("display");
-});
 
 function allLetter(input) {
     var letters = /^[A-Za-z]+$/;
@@ -45,3 +29,9 @@ function allLetter(input) {
         return true;
     }
 }
+
+window.setTimeout("closeMsgDiv();", 3000);
+    function closeMsgDiv() {
+      const msg_div = document.getElementById("msgDiv");
+      msg_div.style.display = "none";
+    }
