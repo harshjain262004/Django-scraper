@@ -102,6 +102,7 @@ function StartBotRun(ClientId, Bot_id) {
       botId: Bot_id,
     },
     success: function (response) {
+
       BotStatDiv.innerHTML =
         `
                 <div id="statusDiv" class="status-div comp-div">
@@ -155,21 +156,14 @@ function GetRefreshList() {
       ClientId: ClientId
     },
     success: function (response) {
-      let xValues = ["Completed", "Error", "Created", "In Progress"];
-      let yValues = [0, 0, 0, 0];
-      var barColors = [
-        "#17c653",
-        "#b91d47",
-        "#FFFF00",
-        "#0047ab"
-      ];
+      let yNewValues = [0, 0, 0, 0];
       response.received_data.forEach(function (bot) {
 
         if (bot.status != "Completed" && bot.status != "Error" && bot.status != "StartBot") {
           var Progressbar = document.getElementById(`ProgressBar-${bot.id}`);
           Progressbar.style.width = bot.status;
           console.log("Width change");
-          yValues[3] += 1;
+          yNewValues[3] += 1;
         }
         else {
           if (bot.status == "Completed") {
@@ -186,7 +180,7 @@ function GetRefreshList() {
                           <button class="view-btn">View Data</button>
                         </a>
                         `;
-            yValues[0] += 1;
+            yNewValues[0] += 1;
           }
           else if (bot.status == "Error") {
             var BotStatDiv = document.getElementById(`BotStat-${bot.id}`);
@@ -203,33 +197,15 @@ function GetRefreshList() {
                           <button class="view-btn">View Data</button>
                         </a>
                         `;
-            yValues[1] += 1;
+            yNewValues[1] += 1;
           }
           else {
-            yValues[2] += 1
+            yNewValues[2] += 1
           }
         }
       });
-      var canvas = document.getElementById('myChart');
-      var ctx = canvas.getContext('2d');
-
-        // Clear the entire canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      myChart = new Chart("myChart", {
-        type: "doughnut",
-        data: {
-          labels: xValues,
-          datasets: [{
-            backgroundColor: barColors,
-            data: yValues
-          }]
-        },
-        options: {
-          title: {
-            display: true,
-          }
-        }
-      });
+      ctx.data.datasets[0].data = yNewValues;
+      ctx.update();
     },
     error: function (error) {
       console.log(error);

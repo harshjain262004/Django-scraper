@@ -28,11 +28,13 @@
   <header class="px-3">
     <div class="d-flex justify-content-between align-items-center h-100">
       <div>Ad Scraper</div>
-      <a href="/logout/{{client.userid}}">
-        <button class="logout-btn">
-          <i class="fa-solid fa-right-from-bracket me-2"></i>Logout
-        </button>
-      </a>
+      <div>
+        <a href="/logout/{{client.userid}}" class="d-flex justify-content-center align-items-center">
+          <button class="logout-btn">
+            <i class="fa-solid fa-right-from-bracket me-2"></i>Logout
+          </button>
+        </a>
+      </div>
     </div>
   </header>
   <div class="row option-div my-3 mx-5 align-items-center">
@@ -196,8 +198,31 @@
     <div class="d-flex justify-content-center align-items-center mt-3 query-name"><button
         id="clsGraphBtn">Close</button></div>
   </div>
-
   <script>
+    let xValues = ["Completed", "Error", "Created", "In Progress"];
+    let yValues = [0,0,0,0];
+    var barColors = [
+        "#17c653",
+        "#b91d47",
+        "#FFFF00",
+        "#0047ab"
+      ];
+      var ctx = new Chart(myChart, {
+        type: "doughnut",
+        data: {
+          labels: xValues,
+          datasets: [{
+            backgroundColor: barColors,
+            data: yValues
+          }]
+        },
+        options: {
+          title: {
+            display: true,
+          }
+        }
+      });
+    
     $("document").ready(function () {
       $("#statsBtn").click(openGraph);
       $("#clsGraphBtn").click(closeGraph);
@@ -221,6 +246,7 @@
         $("#graphDiv").hide();
       }
     });
+
   </script>
 </body>
 
